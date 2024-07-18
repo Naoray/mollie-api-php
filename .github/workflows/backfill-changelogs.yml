@@ -18,10 +18,9 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { owner, repo } = context.repo;
             const response = await github.rest.repos.listReleases({
-              owner,
-              repo,
+              'mollie',
+              'mollie-api-php',
             });
             console.log("Raw API response:", response);
             const releases = response.data;
