@@ -39,11 +39,13 @@ jobs:
       - name: Update Changelog
         run: |
           releases='${{ steps.get_releases.outputs.result }}'
+          echo "Formatted releases for processing:"
+          echo "$releases"
           changelog="# Changelog\n\nAll notable changes to this project will be documented in this file.\n\nThe format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).\n\n"
           echo "$releases" | jq -c '.[]' | while read -r release; do
             tag_name=$(echo "$release" | jq -r '.tag_name')
             name=$(echo "$release" | jq -r '.name')
-            body=$(echo "$release" | jq -r '.body' | sed 's/\\n/\n/g')  # Properly handle newlines
+            body=$(echo "$release" | jq -r '.body' | sed 's/\\\\n/\\n/g')  # Properly handle newlines
             published_at=$(echo "$release" | jq -r '.published_at')
             changelog+="## [$tag_name] - $published_at\n\n$body\n\n"
           done
