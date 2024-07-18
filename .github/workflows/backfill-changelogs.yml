@@ -40,7 +40,7 @@ jobs:
               published_at: release.published_at
             })));
 
-      - name: Debug releases output
+      - name: Output releases
         run: |
           echo "Releases output:"
-          echo '${{ steps.get_releases.outputs.result }}'
+          echo '${{ steps.get_releases.outputs.result }}' | jq .
