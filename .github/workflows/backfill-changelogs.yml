@@ -18,10 +18,9 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { owner, repo } = context.repo;
             const releases = await github.rest.repos.listReleases({
-              owner,
-              repo,
+              owner: 'mollie',
+              repo: 'mollie-api-php',
             });
             console.log("Fetched releases:", releases.data);
             releases.data.sort((a, b) => new Date(a.published_at) - new Date(b.published_at));
