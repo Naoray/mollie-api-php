@@ -40,3 +40,7 @@ jobs:
               published_at: release.published_at
             }));
             core.setOutput('result', JSON.stringify(formattedReleases));
+      - name: Output releases
+        run: |
+          echo "Releases output:"
+          echo '${{ steps.get_releases.outputs.result }}' | jq .
