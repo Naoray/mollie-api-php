@@ -29,7 +29,7 @@ jobs:
             return JSON.stringify(releases.map(release => ({
               tag_name: release.tag_name,
               name: release.name,
-              body: release.body.replace(/\r\n/g, '\\n').replace(/"/g, '\\"'), // Replace newlines and escape quotes
+              body: release.body.replace(/\n/g, '\\n').replace(/"/g, '\\"'), // Replace newlines and escape quotes
               published_at: release.published_at
             })));
 
@@ -45,7 +45,7 @@ jobs:
           echo "$releases" | jq -c '.[]' | while read -r release; do
             tag_name=$(echo "$release" | jq -r '.tag_name')
             name=$(echo "$release" | jq -r '.name')
-            body=$(echo "$release" | jq -r '.body')
+            body=$(echo "$release" | jq -r '.body' | sed 's/\\n/\n/g')  # Properly handle newlines
             published_at=$(echo "$release" | jq -r '.published_at')
             changelog+="## [$tag_name] - $published_at\n\n$body\n\n"
           done
