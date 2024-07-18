@@ -33,9 +33,10 @@ jobs:
             }
             const allReleases = await getAllReleases();
             allReleases.sort((a, b) => new Date(a.published_at) - new Date(b.published_at));
-            console.log(allReleases.map(release => ({
+            const formattedReleases = allReleases.map(release => ({
               tag_name: release.tag_name,
               name: release.name,
-              body: release.body.replace(/\n/g, '\\n').replace(/"/g, '\\"'), // Replace newlines and escape quotes
+              body: release.body ? release.body.replace(/\n/g, '\\n').replace(/"/g, '\\"') : '',
               published_at: release.published_at
-            })));
+            }));
+            core.setOutput('result', JSON.stringify(formattedReleases));
