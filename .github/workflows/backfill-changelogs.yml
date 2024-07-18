@@ -29,7 +29,7 @@ jobs:
             return JSON.stringify(releases.map(release => ({
               tag_name: release.tag_name,
               name: release.name,
-              body: release.body,
+              body: release.body.replace(/\r\n/g, '\\n').replace(/"/g, '\\"'), // Replace newlines and escape quotes
               published_at: release.published_at
             })));
 
@@ -49,7 +49,7 @@ jobs:
             published_at=$(echo "$release" | jq -r '.published_at')
             changelog+="## [$tag_name] - $published_at\n\n$body\n\n"
           done
-          echo "$changelog" > CHANGELOG.md
+          echo -e "$changelog" > CHANGELOG.md
 
       - name: Commit updated CHANGELOG
         uses: stefanzweifel/git-auto-commit-action@v5
