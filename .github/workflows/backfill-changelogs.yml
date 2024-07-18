@@ -19,8 +19,8 @@ jobs:
         with:
           script: |
             const response = await github.rest.repos.listReleases({
-              'mollie',
-              'mollie-api-php',
+              owner: 'mollie',
+              repo: 'mollie-api-php',
             });
             console.log("Raw API response:", response);
             const releases = response.data;
