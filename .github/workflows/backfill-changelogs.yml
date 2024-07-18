@@ -1,0 +1,51 @@
+name: Backfill Changelog
+
+on:
+  workflow_dispatch:
+
+jobs:
+  backfill-changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Get releases
+        id: get_releases
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: releases } = await github.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            releases.sort((a, b) => new Date(a.published_at) - new Date(b.published_at));
+            return JSON.stringify(releases.map(release => ({
+              tag_name: release.tag_name,
+              name: release.name,
+              body: release.body,
+              published_at: release.published_at
+            })));
+
+      - name: Update Changelog
+        run: |
+          releases=$(echo '${{ steps.get_releases.outputs.result }}' | jq -c '.[]')
+          changelog="# Changelog\n\nAll notable changes to this project will be documented in this file.\n\nThe format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).\n\n"
+          for release in $releases; do
+            tag_name=$(echo "$release" | jq -r '.tag_name')
+            name=$(echo "$release" | jq -r '.name')
+            body=$(echo "$release" | jq -r '.body')
+            published_at=$(echo "$release" | jq -r '.published_at')
+            changelog+="## [$tag_name] - $published_at\n\n$body\n\n"
+          done
+          echo "$changelog" > CHANGELOG.md
+
+      - name: Commit updated CHANGELOG
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          branch: main
+          commit_message: "Backfill CHANGELOG with past releases"
+          file_pattern: CHANGELOG.md
