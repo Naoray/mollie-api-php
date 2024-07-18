@@ -11,7 +11,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: master
 
       - name: Get releases
         id: get_releases
@@ -19,8 +19,8 @@ jobs:
         with:
           script: |
             const { data: releases } = await github.repos.listReleases({
-              owner: 'naoray',
-              repo: 'mollie-api-php',
+              owner: context.repo.owner,
+              repo: context.repo.repo,
             });
             releases.sort((a, b) => new Date(a.published_at) - new Date(b.published_at));
             return JSON.stringify(releases.map(release => ({
