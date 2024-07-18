@@ -18,12 +18,13 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { data: releases } = await github.repos.listReleases({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
+            const { owner, repo } = context.repo;
+            const releases = await github.rest.repos.listReleases({
+              owner,
+              repo,
             });
-            releases.sort((a, b) => new Date(a.published_at) - new Date(b.published_at));
-            return JSON.stringify(releases.map(release => ({
+            releases.data.sort((a, b) => new Date(a.published_at) - new Date(b.published_at));
+            return JSON.stringify(releases.data.map(release => ({
               tag_name: release.tag_name,
               name: release.name,
               body: release.body,
