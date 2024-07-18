@@ -33,14 +33,9 @@ jobs:
             }
             const allReleases = await getAllReleases();
             allReleases.sort((a, b) => new Date(a.published_at) - new Date(b.published_at));
-            return JSON.stringify(allReleases.map(release => ({
+            console.log(allReleases.map(release => ({
               tag_name: release.tag_name,
               name: release.name,
               body: release.body.replace(/\n/g, '\\n').replace(/"/g, '\\"'), // Replace newlines and escape quotes
               published_at: release.published_at
             })));
-
-      - name: Output releases
-        run: |
-          echo "Releases output:"
-          echo '${{ steps.get_releases.outputs.result }}' | jq .
