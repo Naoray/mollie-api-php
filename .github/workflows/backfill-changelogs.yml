@@ -22,9 +22,7 @@ jobs:
               owner: 'mollie',
               repo: 'mollie-api-php',
             });
-            console.log("Raw API response:", response);
             const releases = response.data;
-            console.log("Fetched releases:", releases);
             releases.sort((a, b) => new Date(a.published_at) - new Date(b.published_at));
             return JSON.stringify(releases.map(release => ({
               tag_name: release.tag_name,
